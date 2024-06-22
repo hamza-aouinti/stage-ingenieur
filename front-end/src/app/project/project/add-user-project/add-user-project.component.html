@@ -1,0 +1,36 @@
+<h3 mat-dialog-title>Ajouter des personnes</h3>
+<form >
+    <mat-form-field  appearance="fill">
+      <mat-label>Saisir un nom</mat-label>
+      <input matInput
+             aria-label="State"
+             [matAutocomplete]="auto"
+             [formControl]="users">
+      <mat-autocomplete #auto="matAutocomplete" >
+        <mat-option  *ngFor="let user of filteredUsers | async" [value]="user.firstName +' '+ user.lastName" >
+          <div fxFlex="100" fxFlex.gt-md="12">
+          <img alt="user"   class="mat-card-avatar"
+          [src]="user.image" >
+          </div>
+          <div fxFlex="100" fxFlex.gt-md="88" class="user-details">
+          <span >{{user.firstName}} {{user.lastName}}</span> |
+          <small>{{user.position}}</small>
+          </div>
+        </mat-option>
+        <mat-option *ngIf="users.value && !(filteredUsers | async)?.length" [disabled]="true">
+          Aucun résultat trouvé.
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+        <div align="end" class="buttons" fxLayoutGap="10px">
+        <button
+          mat-button
+          (click)="submit()"
+          mat-flat-button
+          color="warn"
+        >
+          Ajouter
+        </button>
+        <button class="annuler" mat-button (click)="closeDialog()">Annuler</button>
+      </div>
+</form>

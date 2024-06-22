@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>Modifier Role</h2>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="roleForm">
+    <mat-form-field>
+      <input
+        type="text"
+        matInput
+        required
+        formControlName="name"
+        placeholder="Nom"
+      />
+      <mat-error *ngIf="roleForm.controls['name'].hasError('required')"
+        >Le nom est obligatoire.</mat-error
+      >
+    </mat-form-field>
+    <mat-form-field>
+      <input
+        type="text"
+        matInput
+        formControlName="description"
+        placeholder="Description"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Permissions</mat-label>
+      <mat-select formControlName="permissions" [multiple]="true">
+        <mat-option
+          *ngFor="let permission of permissions"
+          [value]="permission.id"
+          >{{ permission.name }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+    <div align="end" fxLayoutGap="10px">
+    <button mat-button (click)="Submit()" mat-flat-button color="warn" [disabled]="!roleForm.valid" >
+      Modifier
+    </button>
+    <button class="annuler" mat-button (click)="closeDialog()">Annuler</button>
+    </div>
+  </form>
+</mat-dialog-content>

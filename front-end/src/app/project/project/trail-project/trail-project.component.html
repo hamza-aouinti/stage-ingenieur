@@ -1,0 +1,82 @@
+<mat-card>
+    <mat-card-content>
+      <div fxFlex.gt-md="93" >
+        <mat-card-title>Historique</mat-card-title>
+        <mat-card-subtitle class="project-name"
+          >Dernières modifications sur le projet {{ projectName }}
+        </mat-card-subtitle>
+        </div>
+        <div  >
+          <a mat-icon-button  >
+            <mat-icon matTooltip="Revenir en arrière" color="accent" [routerLink]="['/project/list']"
+            >undo</mat-icon>
+          </a>
+          <a mat-icon-button  >
+            <mat-icon matTooltip="Consulter projet" color="accent" [routerLink]="['/project/details', projectId]"
+            >remove_red_eye</mat-icon>
+          </a>
+          </div>
+    </mat-card-content>
+    <div class="comment-widgets"  *ngFor="let trail of trailProjectList">
+      <!-- Comment Row -->
+      <div class="d-flex flex-row comment-row"  *ngIf="trail.eventType==='POST'" >
+          <div class="p-2">
+            <span class="round">
+              <img src="{{ trail.user.image }}" alt="user" width="50" />
+            </span>
+          </div>
+          <div class="comment-text w-100 p-t-0">
+            <h6 class="m-0">{{ trail.user.firstName }} {{ trail.user.lastName  }}</h6>
+            <p class="m-b-5 m-t-5 text-muted">{{ trail.user.firstName  }} {{ trail.user.lastName  }} a crée le projet</p>
+            <div class="comment-footer">
+              <span class="text-muted pull-right">{{ trail.createdAt | date:' MMMM d, y, h:mm a'  }}</span>
+              <span class="action-icons">
+                <a href="javascript:void(0)">
+                  <i class="ti-comment"></i>
+                </a>
+                <a href="javascript:void(0)">
+                  <i class="ti-heart"></i>
+                </a>
+              </span>
+            </div>
+          </div>
+      </div>
+      <div class="d-flex flex-row comment-row"  *ngIf="trail.eventType==='PUT'" >
+          <div class="p-2">
+            <span class="round">
+              <img src="{{ trail.user.image }}" alt="user" width="50" />
+            </span>
+          </div>
+          <div class="comment-text w-100 p-t-0">
+            <h5 class="m-0">{{ trail.user.firstName }} {{ trail.user.lastName  }}</h5>
+            <ng-container *ngIf="trail.attributes.length === trail.oldValues.length && trail.attributes.length === trail.newValues.length">
+            <p class="m-b-5 m-t-5 text-muted"  *ngFor="let att of trail.attributes ,let i =index" >
+              <span *ngIf="att!=='users'">
+              {{ trail.user.firstName  }} {{ trail.user.lastName  }} <span class="oldValues"> a modifié {{ trail.attributes[i]}} de {{ trail.oldValues[i]}} </span> à <span class="newValues">{{ trail.newValues[i]}}</span>
+            </span> 
+            <span *ngIf="att==='users'">
+                <div *ngIf="trail.newValues[i].length>0" >
+                {{ trail.user.firstName  }} {{ trail.user.lastName  }} <span class="newValues"> a ajouté <span *ngFor="let t of trail.newValues[i],let j =index">{{ trail.newValues[i][j]}} </span>au projet</span>
+              </div> 
+              <div *ngIf="trail.oldValues[i].length>0" >
+                {{ trail.user.firstName  }} {{ trail.user.lastName  }} <span class="oldValues"> a retiré <span *ngFor="let t of trail.oldValues[i],let j =index">{{ trail.oldValues[i][j]}} </span>du projet</span>
+              </div> 
+            </span>  
+          </p>
+            </ng-container>
+            <div class="comment-footer">
+              <span class="text-muted pull-right">{{ trail.createdAt | date:' MMMM d, y, h:mm a' }}</span>
+              <span class="action-icons">
+                <a href="javascript:void(0)">
+                  <i class="ti-comment"></i>
+                </a>
+                <a href="javascript:void(0)">
+                  <i class="ti-heart"></i>
+                </a>
+              </span>
+            </div>
+          </div>
+      </div>
+    </div>
+  </mat-card>
+  

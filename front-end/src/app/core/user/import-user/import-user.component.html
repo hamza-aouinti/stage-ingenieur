@@ -1,0 +1,23 @@
+<h2 class="font-medium" mat-dialog-title><strong>Ajouter Utilisateur</strong></h2>
+<mat-dialog-content class="pb-3">
+    <form (ngSubmit)="onSubmit()" enctype="multipart/form-data" [class.hidden]="isLoading">
+        <div fxLayout="row wrap" class="align-items-center">
+            <div class="m-r-15 m-l-15 input-container">
+                <input required class="form-control" type="file" name="user" accept=".xlsx, .xls" ng2FileSelect
+                    [uploader]="uploader" (change)="onFileChange($event.target.files)">
+                <mat-error>{{ errorMessage }}</mat-error>
+                <mat-error *ngIf="fileTypeError">Invalid file format. Please select an Excel file.</mat-error>
+                <br>
+                <div *ngIf="selectedFile && isLoading" class="loading-container">
+                    <div class="loading-indicator">
+                        <mat-spinner diameter="40"></mat-spinner>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="row wrap" class="align-items-center justify-content-end">
+            <button mat-button mat-flat-button color="warn">Add</button>
+            <button mat-button type="button" (click)="closeDialog()">Cancel</button>
+        </div>
+    </form>
+</mat-dialog-content>

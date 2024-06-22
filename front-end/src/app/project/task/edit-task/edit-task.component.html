@@ -1,0 +1,310 @@
+<mat-card>
+  <mat-card-content class="edit-task">
+    <div fxLayout="row">
+      <div class="title">
+        <h2 mat-dialog-title>Modifier Ticket</h2>
+      </div>
+      <div class="ml-auto">
+        <span class="bg-dark" [ngClass]="getStatusClass()">
+          {{ phaseTitle }}
+        </span>
+      </div>
+    </div>
+    <mat-dialog-content class="pb-3">
+      <form [formGroup]="taskForm">
+        <div fxLayout="row wrap" class="align-items-center">
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-select
+                  placeholder="Type"
+                  [formControl]="taskForm.controls['type']"
+                  required
+                >
+                  <mat-option
+                    *ngFor="let tracker of trackers"
+                    [value]="tracker"
+                  >
+                    {{ tracker }}
+                  </mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="
+                    taskForm.controls['type'].hasError('required') &&
+                    taskForm.controls['type'].touched
+                  "
+                  >Le type est obligatoire.</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <input
+                  type="text"
+                  matInput
+                  required
+                  [formControl]="taskForm.controls['name']"
+                  placeholder="Nom"
+                />
+                <mat-error
+                  *ngIf="
+                    taskForm.controls['name'].hasError('required') &&
+                    taskForm.controls['name'].touched
+                  "
+                  >Le nom de ticket est obligatoire.</mat-error
+                >
+                <mat-error
+                  *ngIf="
+                    taskForm.controls['name'].hasError('minlength') &&
+                    taskForm.controls['name'].touched
+                  "
+                  >Le nom de ticket doit comporter au moins 5
+                  caractères.</mat-error
+                >
+                <mat-error
+                  *ngIf="
+                    taskForm.controls['name'].hasError('maxlength') &&
+                    taskForm.controls['name'].touched
+                  "
+                  >Le nom de ticket ne peut pas dépasser 60
+                  caractères.</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row wrap" class="align-items-center">
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-select
+                  placeholder="Priorité"
+                  [formControl]="taskForm.controls['priority']"
+                >
+                  <mat-option
+                    *ngFor="let priority of priorities"
+                    [value]="priority"
+                  >
+                    {{ priority }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-select
+                  placeholder="Status"
+                  [formControl]="taskForm.controls['status']"
+                  #statusValue
+                  (selectionChange)="changeStatus(statusValue.value)"
+                  required
+                >
+                  <mat-option *ngFor="let s of status" [value]="s">{{
+                    s
+                  }}</mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="
+                    taskForm.controls['status'].hasError('required') &&
+                    taskForm.controls['status'].touched
+                  "
+                  >Le status est obligatoire.</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row wrap" class="align-items-center">
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field appearance="outline">
+                <mat-label>Date Début</mat-label>
+                <input
+                  matInput
+                  [formControl]="taskForm.controls['startDate']"
+                  [matDatepicker]="startDate"
+                />
+                <mat-datepicker-toggle matSuffix [for]="startDate">
+                </mat-datepicker-toggle>
+                <mat-datepicker #startDate> </mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field appearance="outline">
+                <mat-label>Date Fin</mat-label>
+                <input
+                  matInput
+                  [formControl]="taskForm.controls['endDate']"
+                  [matDatepicker]="endDate"
+                />
+                <mat-datepicker-toggle matSuffix [for]="endDate">
+                </mat-datepicker-toggle>
+                <mat-datepicker #endDate> </mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row wrap" class="align-items-center">
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-label>Durée estimée</mat-label>
+                <input
+                  type="number"
+                  matInput
+                  placeholder="durée en heures"
+                  min="0"
+                  [formControl]="taskForm.controls['estimatedTime']"
+                  (keypress)="numberOnly($event)"
+                />
+                <span matSuffix class="text-secondary font-medium">Heures</span>
+              </mat-form-field>
+            </div>
+          </div>
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-label>Temps passé</mat-label>
+                <input
+                  type="number"
+                  matInput
+                  placeholder="durée en heures"
+                  min="0"
+                  [formControl]="taskForm.controls['passedTime']"
+                  (keypress)="numberOnly($event)"
+                />
+                <span matSuffix class="text-secondary font-medium">Heures</span>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row wrap" class="align-items-center">
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-select
+                  placeholder="Version cible"
+                  [formControl]="taskForm.controls['phaseId']"
+                  #choosedValue
+                  (selectionChange)="changePhase(choosedValue.value)"
+                >
+                  <mat-option *ngIf="phaseList.length === 0" disabled
+                    >Aucun résultat trouvé</mat-option
+                  >
+                  <mat-option
+                    *ngFor="let phase of phaseList"
+                    [value]="phase.id"
+                  >
+                    {{ phase.title }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          
+        </div>
+        <div fxLayout="row wrap" class="align-items-center">
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-label>Assigné à</mat-label>
+                <mat-select
+                  matNativeControl
+                  [formControl]="taskForm.controls['userId']"
+                >
+                  <mat-option *ngIf="usersList.length === 0" disabled
+                    >Aucun résultat trouvé</mat-option
+                  >
+                  <mat-option *ngFor="let user of usersList" [value]="user.id"
+                    >{{ user.firstName }} {{ user.lastName }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-label>Réalisation</mat-label>
+                <input
+                  type="number"
+                  matInput
+                  placeholder="réalisation en pourcentage"
+                  min="0"
+                  max="100"
+                  [formControl]="taskForm.controls['realisation']"
+                  (keypress)="numberOnly($event)"
+                  [readonly]="
+                    taskForm.controls['status'].value !== 'In Progress'
+                  "
+                />
+                <mat-error
+                  *ngIf="
+                    taskForm.controls['realisation'].touched &&
+                    taskForm.controls['realisation'].hasError('maxExceeded')
+                  "
+                >
+                  La valeur dépasse le maximum(100%)
+                </mat-error>
+                <span matSuffix class="text-secondary font-medium">%</span>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row wrap" class="align-items-center">
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <mat-label>URL</mat-label>
+                <input
+                  matInput
+                  [formControl]="taskForm.controls['url']"
+                  #urlInput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  (click)="copyUrl(urlInput.value)"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div fxFlex="100" fxFlex.gt-md="50">
+            <div class="m-r-15 m-l-15">
+              <mat-form-field>
+                <textarea
+                  type="text"
+                  matInput
+                  [formControl]="taskForm.controls['comment']"
+                  placeholder="Commentaire"
+                ></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div align="end" fxLayoutGap="10px">
+          <button
+            mat-button
+            (click)="submit()"
+            mat-flat-button
+            color="warn"
+            [disabled]="!taskForm.valid"
+          >
+            Modifier
+          </button>
+          <button class="annuler" mat-button (click)="close()">Annuler</button>
+        </div>
+      </form>
+    </mat-dialog-content>
+  </mat-card-content>
+</mat-card>
+

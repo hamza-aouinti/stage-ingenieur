@@ -1,0 +1,130 @@
+<div fxLayout="row" >
+  <div fxLayoutGap="15px" class="project-buttons">
+    <button mat-raised-button color="primary" (click)="openAddDialog()" *ngIf="hasPermission('add')">
+      <mat-icon>add</mat-icon>
+      Ajouter
+    </button>
+    <button mat-raised-button color="primary" (click)="togglePanel()">
+      <mat-icon>filter_list</mat-icon>
+      Filtrer
+    </button>
+  </div>
+  <div class="ml-auto">
+    <mat-form-field appearance="outline" class="search-button">
+      <input
+        class="input-button"
+        matInput
+        placeholder="Rechercher Projet"
+        (keyup)="applyFilter($event)"
+      />
+      <mat-icon class="icon-size" matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+</div>
+<mat-accordion>
+  <mat-expansion-panel hideToggle [expanded]="panelOpenState">
+    <div fxLayout="row wrap" fxLayoutGap="14px">
+      <div fxFlex.gt-md="19" fxFlex.gt-lg="25" fxFlex="100">
+        <mat-form-field>
+          <mat-label>Nom</mat-label>
+          <input matInput (keyup)="applyNameFilter($event)" />
+        </mat-form-field>
+      </div>
+      <div fxFlex.gt-md="19" fxFlex.gt-lg="25" fxFlex="100">
+        <mat-form-field>
+          <mat-label>Status</mat-label>
+          <mat-select
+            [value]="selectedStatus"
+            (selectionChange)="applyStatusFilter($event)"
+          >
+            <mat-option value="All" selected>Tous</mat-option>
+            <mat-option value={{newStatus}}>{{newStatus}}</mat-option>
+            <mat-option value={{inProgressStatus}}>{{inProgressStatus}}</mat-option>
+            <mat-option value={{completedStatus}}>{{completedStatus}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div fxFlex.gt-md="19" fxFlex.gt-lg="25"  fxFlex="100">
+        <mat-form-field>
+          <mat-label>Type</mat-label>
+          <mat-select
+            [value]="selectedType"
+            (selectionChange)="applyTypeFilter($event)"
+          >
+            <mat-option value="All" selected>Tous</mat-option>
+            <mat-option value={{applicatioWeb}}>{{applicatioWeb}}</mat-option>
+            <mat-option value={{applicationMobile}}>{{applicationMobile}}</mat-option>
+            <mat-option value={{embeddedSystems}}>{{embeddedSystems}}</mat-option>
+            <mat-option value={{electronicSystems}}>{{electronicSystems}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div fxFlex.gt-md="19" fxFlex.gt-lg="25" fxFlex="100">
+        <mat-form-field>
+          <mat-label>Date de début</mat-label>
+          <input matInput [matDatepicker]="startDatePicker" (dateChange)="applyDateFilter()" [(ngModel)]="startDate">
+          <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #startDatePicker></mat-datepicker>
+          <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+        </mat-form-field>
+      </div>
+      <div fxFlex.gt-md="19" fxFlex.gt-lg="25" fxFlex="100">
+        <mat-form-field>
+          <mat-label>Date de fin</mat-label>
+          <input matInput [matDatepicker]="endDatePicker" (dateChange)="applyDateFilter()" [(ngModel)]="endDate">
+          <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #endDatePicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+<div fxLayout="row wrap" fxLayoutGap="20px" class="legend-card">
+  <div class="legend">{{legend}} :</div>
+    <div *ngFor='let lab of legends' (click)='labelChange(lab.name)'>
+        <div class="d-flex align-items-center inbox-list" [class.bg-light]="lab.active">
+            <mat-icon class="m-r-10 font-20" [style.color]="lab.color">{{lab.icon}}</mat-icon>
+            {{lab.name}}
+        </div>
+    </div>
+</div>
+<div fxLayout="row wrap" class="course-app" >
+  <div fxFlex.gt-md="33.33" fxFlex.gt-lg="33.33" fxFlex="100" *ngFor='let project of projectList'>
+    <mat-card>
+      <mat-card-header [ngClass]="getStatusClass(project.status)"  >
+        <mat-card-title>
+          <span class="project-name">{{ project.name }}</span>
+          <span class="project-type">
+            {{ project.type }}
+          </span>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="text-center">
+        <small
+        >De {{ project.startDate | date : "mediumDate" }} A :
+        {{ project.endDate | date : "mediumDate" }}
+      </small>      
+    </mat-card-content>
+      <mat-card-actions class="text-center">
+        <a mat-icon-button> 
+          <mat-icon
+            [routerLink]="['/project/details', project.id]" *ngIf="hasPermission(':id/getOne')"           
+            matTooltip="Consulter détails"
+            >remove_red_eye</mat-icon
+          >
+        </a>
+        <a mat-icon-button (click)="openEditDialog(project)" *ngIf="hasPermission(':id/edit')"
+        matTooltip="Modifier projet"
+          ><mat-icon>edit</mat-icon></a
+        >
+        
+        <a mat-icon-button
+          color="warn"
+          (click)="openDeleteDialog(project)" *ngIf="hasPermission(':id/delete') && project.status === newStatus"
+          matTooltip="Supprimer projet">
+          <mat-icon>delete_outline</mat-icon>
+        </a>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div> 

@@ -1,0 +1,21 @@
+@import 'src/assets/styles/variable.scss';
+
+.oldValues{
+    background: $light-success
+}
+
+.newValues{
+    background: $light-danger
+}
+
+.project-name{
+    text-transform: capitalize;
+    display: inline-block; 
+    max-width: 600px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+  }
+  .trail-text{
+    font-size: smaller;
+  }
